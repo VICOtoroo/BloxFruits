@@ -1,4 +1,4 @@
-Monsif not game:IsLoaded() then 
+if not game:IsLoaded() then 
     repeat game.Loaded:Wait()
     until game:IsLoaded() 
 end
@@ -4346,7 +4346,7 @@ General_Tab:Button("Refresh Boss",function(vu)
 	end
 end)
 
-General_Tab:Label("Farm Npc")
+General_Tab:Label("Farm Monster")
 General_Tab:Toggle("Auto Farm","9606294253",_G.Setting_table.Auto_Farm_Monster,function(vu)
 	Auto_Farm_Monster = vu
 	_G.Setting_table.Auto_Farm_Monster = vu
@@ -4409,7 +4409,7 @@ end
 for key,value in ipairs(result) do
     table.insert(Mons, value)
 end
-local Select_M = General_Tab:Dropdown("Select NPC",_G.Setting_table.Mon_Name,Mons,function(vu)
+local Select_M = General_Tab:Dropdown("Select Monster",_G.Setting_table.Mon_Name,Mons,function(vu)
 	_G.Setting_table.Mon_Name = vu
 	Update_Setting(getgenv()['MyName'])
 end)
