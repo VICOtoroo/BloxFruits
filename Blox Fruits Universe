@@ -5521,10 +5521,13 @@ General_Tab:Toggle("Hop Chest Lock","9606294253",_G.Setting_table.Hop_Chest,func
 	_G.Setting_table.Hop_Chest = vu
 	Update_Setting(getgenv()['MyName'])
 end)
-General_Tab:Slider("Chest Lock",1,100,_G.Setting_table.K_MAX,function(vu)
-	_G.Setting_table.K_MAX = vu
-	Update_Setting(getgenv()['MyName'])
+General_Tab:Slider("Chest Lock", 1, 100, _G.Setting_table.K_MAX, function(vu)
+    if type(vu) == "number" then
+        _G.Setting_table.K_MAX = vu
+        Update_Setting(getgenv().MyName)
+    end
 end)
+
 local K_C = General_Tab:Label('Chest Lock : 0')
 if _G.Setting_table.Grab_Chest then
 	Grab_Chest = true
