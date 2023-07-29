@@ -3708,7 +3708,7 @@ game.StarterGui:SetCore("SendNotification", {
 	Duration = 8
 })
 
-local win = library:Window("Universe",[[Hub]],[[Version : Gay ]],"11818627057",Enum.KeyCode.RightControl)
+local win = library:Window("Universe",[[Hub]],[[Version : Mobile FUDIDO ]],"11818627057",Enum.KeyCode.RightControl)
 local General_Tab = win:Tab("General",[[7040391851]])
 local Quest_Tab = win:Tab("    Quest & Item",[[9606626859]])
 local PvP_Tab = win:Tab("PvP",[[9606626034]])
