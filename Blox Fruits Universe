@@ -3028,22 +3028,18 @@ local Stats = Library:Tab("Stats","rbxassetid://7040410130")
     local Misc = Library:Tab("Misc","rbxassetid://6034509993")
     --------------------------------------------------------------------
 Setting:Seperator("「 Credits 」")
-    Setting:Label("Made By GoOoTiE#1331 ")
-    Setting:Label("Ui Remade By Hatori.")
+    Setting:Label("Leossin Xernous")
+    Setting:Label("Grupo RAQUIADO.")
      
-     Setting:Label("Join My discord For More Info!")
+     Setting:Label("Come meu cu?")
      
      Setting:Line()
      
       Setting:Button("Copy Discord Link",function()
        Update:Notification("Discord Link Copied")
-setclipboard("https://discord.gg/g2setDfUCW")
+setclipboard("https://discord.gg/kDtNghTq")
       end)
    
-    Setting:Button("Copy Youtube Link",function()
-     Update:Notification("Youtube Link Copied")
-     setclipboard("https://www.youtube.com/channel/UCIHfYuVxqe7d_kUNSmfnDrg")
-    end)
     
     Setting:Seperator("「 Setting 」")
     
@@ -8488,3 +8484,4 @@ end)
     Misc:Toggle("NoClip",_G.NOCLIP,function(value)
         _G.NOCLIP = value
     end)
+ 
