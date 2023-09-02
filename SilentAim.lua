@@ -8,19 +8,17 @@ if not syn or not protectgui then
 end
 
 local SilentAimSettings = {
-    Enabled = false,
+    Enabled = true,
     
-    ClassName = "UniverseHub",
-    ToggleKey = "RightAlt",
+    ClassName = "Leo Modz",
+    ToggleKey = "Period",
     
     TeamCheck = false,
     VisibleCheck = false, 
     TargetPart = "HumanoidRootPart",
-    SilentAimMethod = "Raycast",
+    SilentAimMethod = "Mouse.Hit/Target",
     
-    FOVRadius = 130,
-    FOVVisible = false,
-    ShowSilentAimTarget = false, 
+    ShowSilentAimTarget = true, 
     
     MouseHitPrediction = false,
     MouseHitPredictionAmount = 0.165,
@@ -29,7 +27,7 @@ local SilentAimSettings = {
 
 -- variables
 getgenv().SilentAimSettings = Settings
-local MainFileName = "UniversalSilentAim"
+local MainFileName = "UniverseSilentAim"
 local SelectedFile, FileToSave = "", ""
 
 local Camera = workspace.CurrentCamera
@@ -65,16 +63,6 @@ mouse_box.Color = Color3.fromRGB(54, 57, 241)
 mouse_box.Thickness = 20 
 mouse_box.Size = Vector2.new(20, 20)
 mouse_box.Filled = true 
-
-local fov_circle = Drawing.new("Circle")
-fov_circle.Thickness = 1
-fov_circle.NumSides = 100
-fov_circle.Radius = 180
-fov_circle.Filled = false
-fov_circle.Visible = false
-fov_circle.ZIndex = 999
-fov_circle.Transparency = 1
-fov_circle.Color = Color3.fromRGB(54, 57, 241)
 
 local ExpectedArguments = {
     FindPartOnRayWithIgnoreList = {
@@ -125,7 +113,7 @@ end
     end
 end
 
-local Files = listfiles(string.format("%s/%s", "UniversalSilentAim", tostring(game.PlaceId)))
+local Files = listfiles(string.format("%s/%s", "UniverseSilentAim", tostring(game.PlaceId)))
 
 -- functions
 local function GetFiles() -- credits to the linoria lib for this function, listfiles returns the files full path and its annoying
@@ -211,39 +199,30 @@ local function IsPlayerVisible(Player)
 end
 
 local function getClosestPlayer()
-    if not Options.TargetPart.Value then return end
     local Closest
-    local DistanceToMouse
-    for _, Player in next, GetPlayers(Players) do
+    local DistanceToPlayer
+    for _, Player in ipairs(game:GetService("Players"):GetPlayers()) do
         if Player == LocalPlayer then continue end
         if Toggles.TeamCheck.Value and Player.Team == LocalPlayer.Team then continue end
-
         local Character = Player.Character
         if not Character then continue end
-        
-        if Toggles.VisibleCheck.Value and not IsPlayerVisible(Player) then continue end
-
-        local HumanoidRootPart = FindFirstChild(Character, "HumanoidRootPart")
-        local Humanoid = FindFirstChild(Character, "Humanoid")
-        if not HumanoidRootPart or not Humanoid or Humanoid and Humanoid.Health <= 0 then continue end
-
-        local ScreenPosition, OnScreen = getPositionOnScreen(HumanoidRootPart.Position)
-        if not OnScreen then continue end
-
-        local Distance = (getMousePosition() - ScreenPosition).Magnitude
-        if Distance <= (DistanceToMouse or Options.Radius.Value or 2000) then
-            Closest = ((Options.TargetPart.Value == "Random" and Character[ValidTargetParts[math.random(1, #ValidTargetParts)]]) or Character[Options.TargetPart.Value])
-            DistanceToMouse = Distance
+        local HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
+        if not HumanoidRootPart then continue end
+        local Distance = (LocalPlayer.Character.HumanoidRootPart.Position - HumanoidRootPart.Position).Magnitude
+        if not Closest or Distance < DistanceToPlayer then
+            Closest = HumanoidRootPart
+            DistanceToPlayer = Distance
         end
     end
     return Closest
 end
 
+
 -- ui creating & handling
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/PeasIn/LinoriaLib/main/Library.lua"))()
-Library:SetWatermark("O Brabo")
+Library:SetWatermark("Eita Porra")
 
-local Window = Library:CreateWindow("Silent Skill")
+local Window = Library:CreateWindow("Silent Cuzin")
 local GeneralTab = Window:AddTab("General")
 local MainBOX = GeneralTab:AddLeftTabbox("Main") do
     local Main = MainBOX:AddTab("Main")
@@ -258,6 +237,10 @@ local MainBOX = GeneralTab:AddLeftTabbox("Main") do
         mouse_box.Visible = SilentAimSettings.Enabled
     end)
     
+   Main:AddToggle("KaybindList", {Text = "Keybind List", Default = SilentAimSettings.Keybind}):OnChanged(function()
+    Library.KeybindFrame.Visible = Toggles.KaybindList.Value
+   end)
+
     Main:AddToggle("TeamCheck", {Text = "Team Check", Default = SilentAimSettings.TeamCheck}):OnChanged(function()
         SilentAimSettings.TeamCheck = Toggles.TeamCheck.Value
     end)
@@ -268,9 +251,7 @@ local MainBOX = GeneralTab:AddLeftTabbox("Main") do
         SilentAimSettings.TargetPart = Options.TargetPart.Value
     end)
     Main:AddDropdown("Method", {AllowNull = true, Text = "Silent Aim Method", Default = SilentAimSettings.SilentAimMethod, Values = {
-        "Raycast","FindPartOnRay",
-        "FindPartOnRayWithWhitelist",
-        "FindPartOnRayWithIgnoreList",
+        "Raycast",
         "Mouse.Hit/Target"
     }}):OnChanged(function() 
         SilentAimSettings.SilentAimMethod = Options.Method.Value 
@@ -293,14 +274,6 @@ local MiscellaneousBOX = GeneralTab:AddLeftTabbox("Miscellaneous")
 local FieldOfViewBOX = GeneralTab:AddLeftTabbox("Field Of View") do
     local Main = FieldOfViewBOX:AddTab("Visuals")
     
-    Main:AddToggle("Visible", {Text = "Show FOV Circle"}):AddColorPicker("Color", {Default = Color3.fromRGB(54, 57, 241)}):OnChanged(function()
-        fov_circle.Visible = Toggles.Visible.Value
-        SilentAimSettings.FOVVisible = Toggles.Visible.Value
-    end)
-    Main:AddSlider("Radius", {Text = "FOV Circle Radius", Min = 0, Max = 2000, Default = 400, Rounding = 0}):OnChanged(function()
-        fov_circle.Radius = Options.Radius.Value
-        SilentAimSettings.FOVRadius = Options.Radius.Value
-    end)
     Main:AddToggle("MousePosition", {Text = "Show Silent Aim Target"}):AddColorPicker("MouseVisualizeColor", {Default = Color3.fromRGB(54, 57, 241)}):OnChanged(function()
         mouse_box.Visible = Toggles.MousePosition.Value 
         SilentAimSettings.ShowSilentAimTarget = Toggles.MousePosition.Value 
@@ -353,8 +326,6 @@ local LoadConfigurationBOX = GeneralTab:AddRightTabbox("Load Configuration") do
             Toggles.VisibleCheck:SetValue(SilentAimSettings.VisibleCheck)
             Options.TargetPart:SetValue(SilentAimSettings.TargetPart)
             Options.Method:SetValue(SilentAimSettings.SilentAimMethod)
-            Toggles.Visible:SetValue(SilentAimSettings.FOVVisible)
-            Options.Radius:SetValue(SilentAimSettings.FOVRadius)
             Toggles.MousePosition:SetValue(SilentAimSettings.ShowSilentAimTarget)
             Toggles.Prediction:SetValue(SilentAimSettings.MouseHitPrediction)
             Options.Amount:SetValue(SilentAimSettings.MouseHitPredictionAmount)
@@ -377,12 +348,6 @@ resume(create(function()
                 mouse_box.Visible = false 
                 mouse_box.Position = Vector2.new()
             end
-        end
-        
-        if Toggles.Visible.Value then 
-            fov_circle.Visible = Toggles.Visible.Value
-            fov_circle.Color = Options.Color.Value
-            fov_circle.Position = getMousePosition()
         end
     end)
 end))
