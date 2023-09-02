@@ -6015,8 +6015,8 @@ end)
             while wait() do
                 if _G.AutoObservation then
                     if game:GetService("Players").LocalPlayer.VisionRadius.Value >= 3000 then
-local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/EITAPORRA2/BloxFruits/main/Notification"))()
-local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/EITAPORRA2/BloxFruits/main/Notification%20Holder"))()
+local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/EITAPORRA2/BloxFruits/main/Notification.lua"))()
+local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/EITAPORRA2/BloxFruits/main/Notification%20Holder.lua"))()
 wait(1)
 Notification:Notify(
    {Title = "Universe HUB", Description = "You Have Max Observation"},
