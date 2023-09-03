@@ -225,9 +225,9 @@ Library:SetWatermark("Eita Porra")
 local Window = Library:CreateWindow("Silent Cuzin")
 local GeneralTab = Window:AddTab("General")
 local MainBOX = GeneralTab:AddLeftTabbox("Main") do
-    local Main = MainBOX:AddTab("Main")
+local Main = MainBOX:AddTab("Main")
     
-    Main:AddToggle("aim_Enabled", {Text = "Enabled"}):AddKeyPicker("aim_Enabled_KeyPicker", {Default = "RightAlt", SyncToggleState = true, Mode = "Toggle", Text = "Enabled", NoUI = false});
+Main:AddToggle("aim_Enabled", {Text = "Enabled"}):AddKeyPicker("aim_Enabled_KeyPicker", {Default = "RightAlt", SyncToggleState = true, Mode = "Toggle", Text = "Enabled", NoUI = false});
     Options.aim_Enabled_KeyPicker:OnClick(function()
         SilentAimSettings.Enabled = not SilentAimSettings.Enabled
         
@@ -241,11 +241,576 @@ local MainBOX = GeneralTab:AddLeftTabbox("Main") do
     Library.KeybindFrame.Visible = Toggles.KaybindList.Value
    end)
 
+   Main:AddToggle("WalkOnWater", {Text = "Walk On Water", Default = SilentAimSettings.WalkWater}):OnChanged(function(vu)
+    _G.WalkWater = vu
+   end)
+
+   spawn(function()
+    while task.wait() do
+        pcall(function()
+            if _G.WalkWater then
+                game:GetService("Workspace").Map["WaterBase-Plane"].Size = Vector3.new(1000,112,1000)
+            else
+                game:GetService("Workspace").Map["WaterBase-Plane"].Size = Vector3.new(1000,80,1000)
+            end
+        end)
+    end
+end)
+
+Main:AddToggle("InfSoru", {Text = "Infinite Soru", Default = SilentAimSettings.SoruNoCool}):OnChanged(function(value)
+    getgenv().InfSoru = value
+   end)
+
+spawn(function()
+    while wait() do
+        pcall(function()
+            if getgenv().InfSoru and game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart") ~= nil  then
+                for i,v in next, getgc() do
+                    if game:GetService("Players").LocalPlayer.Character.Soru then
+                        if typeof(v) == "function" and getfenv(v).script == game:GetService("Players").LocalPlayer.Character.Soru then
+                            for i2,v2 in next, getupvalues(v) do
+                                if typeof(v2) == "table" then
+                                    repeat wait(.1)
+                                        v2.LastUse = 0
+                                    until not getgenv().InfSoru or game:GetService("Players").LocalPlayer.Character.Humanoid.Health <= 0
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+Main:AddToggle("InfGeppo", {Text = "Infinite Geppo", Default = SilentAimSettings.InfiniteGeppo}):OnChanged(function(value)
+    getgenv().InfGeppo = value
+end)
+
+spawn(function()
+    while wait() do
+        pcall(function()
+            if getgenv().InfGeppo then
+                for i,v in next, getgc() do
+                    if game:GetService("Players").LocalPlayer.Character.Skyjump then
+                        if typeof(v) == "function" and getfenv(v).script == game:GetService("Players").LocalPlayer.Character.Skyjump then
+                            for i2,v2 in next, getupvalues(v) do
+                                if tostring(i2) == "9" then
+                                    repeat wait(.1)
+                                        setupvalue(v,i2,0)
+                                    until not getgenv().InfGeppo or game:GetService("Players").LocalPlayer.Character.Humanoid.Health <= 0 
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+Main:AddToggle("ObsRange", {Text = "Infinite Observation Range", Default = SilentAimSettings.InfiniteObs}):OnChanged(function(value)
+    getgenv().InfiniteObRange = value
+    local VS = game:GetService("Players").LocalPlayer.VisionRadius.Value
+    while getgenv().InfiniteObRange do
+        wait()
+        local player = game:GetService("Players").LocalPlayer
+        local char = player.Character
+        local VisionRadius = player.VisionRadius
+        if player then
+            if char.Humanoid.Health <= 0 then 
+                wait(5) 
+            end
+            VisionRadius.Value = math.huge
+        elseif getgenv().InfiniteObRange == false and player then
+            VisionRadius.Value = VS
+        end
+    end
+end)
+
+function InfAb()
+	if InfAbility then
+		if not game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("Agility") then
+			local inf = Instance.new("ParticleEmitter")
+			inf.Acceleration = Vector3.new(0,0,0)
+			inf.Archivable = true
+			inf.Drag = 20
+			inf.EmissionDirection = Enum.NormalId.Top
+			inf.Enabled = true
+			inf.Lifetime = NumberRange.new(0.2,0.2)
+			inf.LightInfluence = 0
+			inf.LockedToPart = true
+			inf.Name = "Agility"
+			inf.Rate = 500
+			local numberKeypoints2 = {
+				NumberSequenceKeypoint.new(0, 0);  -- At t=0, size of 0
+				NumberSequenceKeypoint.new(1, 4); -- At t=1, size of 10
+			}
+
+			inf.Size = NumberSequence.new(numberKeypoints2)
+			inf.RotSpeed = NumberRange.new(999, 9999)
+			inf.Rotation = NumberRange.new(0, 0)
+			inf.Speed = NumberRange.new(30, 30)
+			inf.SpreadAngle = Vector2.new(360,360)
+			inf.Texture = "rbxassetid://243098098"
+			inf.VelocityInheritance = 0
+			inf.ZOffset = 2
+			inf.Transparency = NumberSequence.new(0)
+			inf.Color = ColorSequence.new(Color3.fromRGB(0, 255, 255),Color3.fromRGB(0, 255, 255))
+			inf.Parent = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
+		end
+	else
+		if game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("Agility") then
+			game.Players.LocalPlayer.Character.HumanoidRootPart:FindFirstChild("Agility"):Destroy()
+		end
+	end
+end
+
+Main:AddToggle("InfAB", {Text = "Infinite Ability", Default = SilentAimSettings.InfinityAB}):OnChanged(function(value)
+    InfAbility = value
+    local player = game:GetService("Players").LocalPlayer
+    local character = player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local agility = character.HumanoidRootPart:FindFirstChild("Agility")
+        if agility then
+            agility:Destroy()
+        end
+    end
+end)
+
+
+spawn(function()
+    while wait() do
+        if InfAbility then
+            InfAb()
+        end
+    end
+end)
+
+
+
+Main:AddToggle("AutoV3", {Text = "Auto Active Race V3", Default = SilentAimSettings.AutoActV3}):OnChanged(function(value)
+    _G.AutoAgility = value
+end)
+
+Main:AddToggle("AutoV4", {Text = "Auto Active Race V4", Default = SilentAimSettings.AutoActV4}):OnChanged(function(value)
+    _G.AutoAgility1 = value
+end)
+
+spawn(function()
+    pcall(function()
+        while wait() do
+            if _G.AutoAgility then
+                game:GetService("ReplicatedStorage").Remotes.CommE:FireServer("ActivateAbility")
+            end
+        end
+    end)
+end)
+
+spawn(function()
+pcall(function()
+while wait() do
+if _G.AutoAgility1 then
+game:GetService("VirtualInputManager"):SendKeyEvent(true,"Y",false,game)
+game:GetService("VirtualInputManager"):SendKeyEvent(false,"Y",false,game)
+end
+end
+end)
+end)
+
+function NoDodgeCool()
+	if nododgecool then
+		for i,v in next, getgc() do
+			if game.Players.LocalPlayer.Character.Dodge then
+				if typeof(v) == "function" and getfenv(v).script == game.Players.LocalPlayer.Character.Dodge then
+					for i2,v2 in next, getupvalues(v) do
+						if tostring(v2) == "0.4" then
+							repeat wait(.01)
+								setupvalue(v,i2,0)
+							until not nododgecool
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+Main:AddToggle("DodgeNoCD", {Text = "Dodge No Cooldown", Default = SilentAimSettings.DodgeNoCool}):OnChanged(function(value)
+    nododgecool = value
+    NoDodgeCool()
+end)
+
+local LocalPlayer = game:GetService'Players'.LocalPlayer
+local originalstam = LocalPlayer.Character.Energy.Value
+function infinitestam()
+    game:GetService'Players'.LocalPlayer.Character.Energy.Changed:connect(function()
+        if InfinitsEnergy then
+            LocalPlayer.Character.Energy.Value = originalstam
+        end 
+    end)
+end
+
+spawn(function()
+    pcall(function()
+        while wait(.1) do
+            if InfiniteEnergy then
+                wait(0.1)
+                originalstam = LocalPlayer.Character.Energy.Value
+                infinitestam()
+            end
+        end
+    end)
+end)
+
+Main:AddToggle("InfStam", {Text = "Infinite Stamina", Default = SilentAimSettings.InfStamina}):OnChanged(function(vu)
+	InfinitsEnergy = vu
+	if vu then
+    infinitestam()
+    end
+end)
+
+function isnil(thing)
+	return (thing == nil)
+end
+local function round(n)
+	return math.floor(tonumber(n) + 0.5)
+end
+Number = math.random(1, 1000000)
+function UpdatePlayerChams()
+	for i,v in pairs(game:GetService'Players':GetChildren()) do
+		pcall(function()
+			if not isnil(v.Character) then
+				if ESPPlayer then
+					if not isnil(v.Character.Head) and not v.Character.Head:FindFirstChild('NameEsp'..Number) then
+						local bill = Instance.new('BillboardGui',v.Character.Head)
+						bill.Name = 'NameEsp'..Number
+						bill.ExtentsOffset = Vector3.new(0, 1, 0)
+						bill.Size = UDim2.new(1,200,1,30)
+						bill.Adornee = v.Character.Head
+						bill.AlwaysOnTop = true
+						local name = Instance.new('TextLabel',bill)
+						name.Font = Enum.Font.GothamSemibold
+						name.FontSize = "Size14"
+						name.TextWrapped = true
+						name.Text = (v.Name ..' \n'.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Character.Head.Position).Magnitude/3) ..' M')
+						name.Size = UDim2.new(1,0,1,0)
+						name.TextYAlignment = 'Top'
+						name.BackgroundTransparency = 1
+						name.TextStrokeTransparency = 0.5
+						if v.Team == game.Players.LocalPlayer.Team then
+							name.TextColor3 = Color3.new(0,255,0)
+						else
+							name.TextColor3 = Color3.new(255,0,0)
+						end
+					else
+						v.Character.Head['NameEsp'..Number].TextLabel.Text = (v.Name ..' | '.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Character.Head.Position).Magnitude/3) ..' M\nHealth : ' .. round(v.Character.Humanoid.Health*100/v.Character.Humanoid.MaxHealth) .. '%')
+					end
+				else
+					if v.Character.Head:FindFirstChild('NameEsp'..Number) then
+						v.Character.Head:FindFirstChild('NameEsp'..Number):Destroy()
+					end
+				end
+			end
+		end)
+	end
+end
+function UpdateChestChams() 
+	for i,v in pairs(game.Workspace:GetChildren()) do
+		pcall(function()
+			if string.find(v.Name,"Chest") then
+				if ChestESP then
+					if string.find(v.Name,"Chest") then
+						if not v:FindFirstChild('NameEsp'..Number) then
+							local bill = Instance.new('BillboardGui',v)
+							bill.Name = 'NameEsp'..Number
+							bill.ExtentsOffset = Vector3.new(0, 1, 0)
+							bill.Size = UDim2.new(1,200,1,30)
+							bill.Adornee = v
+							bill.AlwaysOnTop = true
+							local name = Instance.new('TextLabel',bill)
+							name.Font = Enum.Font.GothamSemibold
+							name.FontSize = "Size14"
+							name.TextWrapped = true
+							name.Size = UDim2.new(1,0,1,0)
+							name.TextYAlignment = 'Top'
+							name.BackgroundTransparency = 1
+							name.TextStrokeTransparency = 0.5
+							if v.Name == "Chest1" then
+								name.TextColor3 = Color3.fromRGB(109, 109, 109)
+								name.Text = ("Chest 1" ..' \n'.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Position).Magnitude/3) ..' M')
+							end
+							if v.Name == "Chest2" then
+								name.TextColor3 = Color3.fromRGB(173, 158, 21)
+								name.Text = ("Chest 2" ..' \n'.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Position).Magnitude/3) ..' M')
+							end
+							if v.Name == "Chest3" then
+								name.TextColor3 = Color3.fromRGB(85, 255, 255)
+								name.Text = ("Chest 3" ..' \n'.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Position).Magnitude/3) ..' M')
+							end
+						else
+							v['NameEsp'..Number].TextLabel.Text = (v.Name ..'   \n'.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Position).Magnitude/3) ..' M')
+						end
+					end
+				else
+					if v:FindFirstChild('NameEsp'..Number) then
+						v:FindFirstChild('NameEsp'..Number):Destroy()
+					end
+				end
+			end
+		end)
+	end
+end
+function UpdateDevilChams() 
+	for i,v in pairs(game.Workspace:GetChildren()) do
+		pcall(function()
+			if DevilFruitESP then
+				if string.find(v.Name, "Fruit") then   
+					if not v.Handle:FindFirstChild('NameEsp'..Number) then
+						local bill = Instance.new('BillboardGui',v.Handle)
+						bill.Name = 'NameEsp'..Number
+						bill.ExtentsOffset = Vector3.new(0, 1, 0)
+						bill.Size = UDim2.new(1,200,1,30)
+						bill.Adornee = v.Handle
+						bill.AlwaysOnTop = true
+						local name = Instance.new('TextLabel',bill)
+						name.Font = Enum.Font.GothamSemibold
+						name.FontSize = "Size14"
+						name.TextWrapped = true
+						name.Size = UDim2.new(1,0,1,0)
+						name.TextYAlignment = 'Top'
+						name.BackgroundTransparency = 1
+						name.TextStrokeTransparency = 0.5
+						name.TextColor3 = Color3.fromRGB(255, 0, 0)
+						name.Text = (v.Name ..' \n'.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Handle.Position).Magnitude/3) ..' M')
+					else
+						v.Handle['NameEsp'..Number].TextLabel.Text = (v.Name ..'   \n'.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Handle.Position).Magnitude/3) ..' M')
+					end
+				end
+			else
+				if v.Handle:FindFirstChild('NameEsp'..Number) then
+					v.Handle:FindFirstChild('NameEsp'..Number):Destroy()
+				end
+			end
+		end)
+	end
+end
+function UpdateFlowerChams() 
+	for i,v in pairs(game.Workspace:GetChildren()) do
+		pcall(function()
+			if v.Name == "Flower2" or v.Name == "Flower1" then
+				if FlowerESP then 
+					if not v:FindFirstChild('NameEsp'..Number) then
+						local bill = Instance.new('BillboardGui',v)
+						bill.Name = 'NameEsp'..Number
+						bill.ExtentsOffset = Vector3.new(0, 1, 0)
+						bill.Size = UDim2.new(1,200,1,30)
+						bill.Adornee = v
+						bill.AlwaysOnTop = true
+						local name = Instance.new('TextLabel',bill)
+						name.Font = Enum.Font.GothamSemibold
+						name.FontSize = "Size14"
+						name.TextWrapped = true
+						name.Size = UDim2.new(1,0,1,0)
+						name.TextYAlignment = 'Top'
+						name.BackgroundTransparency = 1
+						name.TextStrokeTransparency = 0.5
+						name.TextColor3 = Color3.fromRGB(255, 0, 0)
+						if v.Name == "Flower1" then 
+							name.Text = ("Blue Flower" ..' \n'.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Position).Magnitude/3) ..' M')
+							name.TextColor3 = Color3.fromRGB(0, 0, 255)
+						end
+						if v.Name == "Flower2" then
+							name.Text = ("Red Flower" ..' \n'.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Position).Magnitude/3) ..' M')
+							name.TextColor3 = Color3.fromRGB(255, 0, 0)
+						end
+					else
+						v['NameEsp'..Number].TextLabel.Text = (v.Name ..'   \n'.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Position).Magnitude/3) ..' M')
+					end
+				else
+					if v:FindFirstChild('NameEsp'..Number) then
+					v:FindFirstChild('NameEsp'..Number):Destroy()
+					end
+				end
+			end   
+		end)
+	end
+end
+function UpdateRealFruitChams() 
+	for i,v in pairs(game.Workspace.AppleSpawner:GetChildren()) do
+		if v:IsA("Tool") then
+			if RealFruitESP then 
+				if not v.Handle:FindFirstChild('NameEsp'..Number) then
+					local bill = Instance.new('BillboardGui',v.Handle)
+					bill.Name = 'NameEsp'..Number
+					bill.ExtentsOffset = Vector3.new(0, 1, 0)
+					bill.Size = UDim2.new(1,200,1,30)
+					bill.Adornee = v.Handle
+					bill.AlwaysOnTop = true
+					local name = Instance.new('TextLabel',bill)
+					name.Font = Enum.Font.GothamSemibold
+					name.FontSize = "Size14"
+					name.TextWrapped = true
+					name.Size = UDim2.new(1,0,1,0)
+					name.TextYAlignment = 'Top'
+					name.BackgroundTransparency = 1
+					name.TextStrokeTransparency = 0.5
+					name.TextColor3 = Color3.fromRGB(255, 0, 0)
+					name.Text = (v.Name ..' \n'.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Handle.Position).Magnitude/3) ..' M')
+				else
+					v.Handle['NameEsp'..Number].TextLabel.Text = (v.Name ..' '.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Handle.Position).Magnitude/3) ..' M')
+				end
+			else
+				if v.Handle:FindFirstChild('NameEsp'..Number) then
+					v.Handle:FindFirstChild('NameEsp'..Number):Destroy()
+				end
+			end 
+		end
+	end
+	for i,v in pairs(game.Workspace.PineappleSpawner:GetChildren()) do
+		if v:IsA("Tool") then
+			if RealFruitESP then 
+				if not v.Handle:FindFirstChild('NameEsp'..Number) then
+					local bill = Instance.new('BillboardGui',v.Handle)
+					bill.Name = 'NameEsp'..Number
+					bill.ExtentsOffset = Vector3.new(0, 1, 0)
+					bill.Size = UDim2.new(1,200,1,30)
+					bill.Adornee = v.Handle
+					bill.AlwaysOnTop = true
+					local name = Instance.new('TextLabel',bill)
+					name.Font = Enum.Font.GothamSemibold
+					name.FontSize = "Size14"
+					name.TextWrapped = true
+					name.Size = UDim2.new(1,0,1,0)
+					name.TextYAlignment = 'Top'
+					name.BackgroundTransparency = 1
+					name.TextStrokeTransparency = 0.5
+					name.TextColor3 = Color3.fromRGB(255, 174, 0)
+					name.Text = (v.Name ..' \n'.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Handle.Position).Magnitude/3) ..' M')
+				else
+					v.Handle['NameEsp'..Number].TextLabel.Text = (v.Name ..' '.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Handle.Position).Magnitude/3) ..' M')
+				end
+			else
+				if v.Handle:FindFirstChild('NameEsp'..Number) then
+					v.Handle:FindFirstChild('NameEsp'..Number):Destroy()
+				end
+			end 
+		end
+	end
+	for i,v in pairs(game.Workspace.BananaSpawner:GetChildren()) do
+		if v:IsA("Tool") then
+			if RealFruitESP then 
+				if not v.Handle:FindFirstChild('NameEsp'..Number) then
+					local bill = Instance.new('BillboardGui',v.Handle)
+					bill.Name = 'NameEsp'..Number
+					bill.ExtentsOffset = Vector3.new(0, 1, 0)
+					bill.Size = UDim2.new(1,200,1,30)
+					bill.Adornee = v.Handle
+					bill.AlwaysOnTop = true
+					local name = Instance.new('TextLabel',bill)
+					name.Font = Enum.Font.GothamSemibold
+					name.FontSize = "Size14"
+					name.TextWrapped = true
+					name.Size = UDim2.new(1,0,1,0)
+					name.TextYAlignment = 'Top'
+					name.BackgroundTransparency = 1
+					name.TextStrokeTransparency = 0.5
+					name.TextColor3 = Color3.fromRGB(251, 255, 0)
+					name.Text = (v.Name ..' \n'.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Handle.Position).Magnitude/3) ..' M')
+				else
+					v.Handle['NameEsp'..Number].TextLabel.Text = (v.Name ..' '.. round((game:GetService('Players').LocalPlayer.Character.Head.Position - v.Handle.Position).Magnitude/3) ..' M')
+				end
+			else
+				if v.Handle:FindFirstChild('NameEsp'..Number) then
+					v.Handle:FindFirstChild('NameEsp'..Number):Destroy()
+				end
+			end 
+		end
+	end
+end
+
+Main:AddToggle("PlrEsp", {Text = "ESP Players", Default = SilentAimSettings.PlayerEsp}):OnChanged(function(a)
+ESPPlayer = a
+while ESPPlayer do wait()
+UpdatePlayerChams()
+end
+end)
+
+Main:AddToggle("FrtEsp", {Text = "ESP Fruits", Default = SilentAimSettings.FruitEsp}):OnChanged(function(a)
+DevilFruitESP = a
+while DevilFruitESP do wait()
+UpdateDevilChams()
+end
+end)
+
+spawn(function()
+    while wait(.1) do
+        if Auto_Haki then
+            if not game.Players.LocalPlayer.Character:FindFirstChild("HasBuso") then
+                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Buso")
+            end
+        end
+    end
+end)
+
+Main:AddToggle("AutoEnableHaki", {Text = "Auto Active Haki", Default = SilentAimSettings.AutoHaki}):OnChanged(function(vu)
+    Auto_Haki = vu
+end)
+
+spawn(function()
+	while wait() do
+		if AutoObservation then
+			if not game.Players.LocalPlayer.PlayerGui.ScreenGui:FindFirstChild("ImageLabel") then
+				wait(1)
+				game:GetService('VirtualUser'):CaptureController()
+				game:GetService('VirtualUser'):SetKeyDown('0x65')
+			   	wait(2)
+			   	game:GetService('VirtualUser'):SetKeyUp('0x65')
+			end
+		end
+	end
+end)
+
+Main:AddToggle("AutoEnableOBS", {Text = "Auto Active Observation", Default = SilentAimSettings.AutoObs}):OnChanged(function(vu)
+	AutoObservation = vu
+end)
+
+Main:AddSlider("WkSpeed", {Text = "WalkSpeed Modifier", Min = 1, Max = 1000, Default = 100, Rounding = 1}):OnChanged(function(v)
+    _G.HackedWalkSpeed = v
+end)
+
+_G.HackedWalkSpeed = 100
+
+local Plrs = game:GetService("Players")
+
+local MyPlr = Plrs.LocalPlayer
+local MyChar = MyPlr.Character
+
+if MyChar then
+local Hum = MyChar.Humanoid
+Hum.Changed:connect(function()
+Hum.WalkSpeed = _G.HackedWalkSpeed
+end)
+Hum.WalkSpeed = _G.HackedWalkSpeed
+end
+
+
+MyPlr.CharacterAdded:connect(function(Char)
+MyChar = Char
+repeat wait() until Char:FindFirstChild("Humanoid")
+local Hum = Char.Humanoid
+Hum.Changed:connect(function()
+Hum.WalkSpeed = _G.HackedWalkSpeed
+end)
+Hum.WalkSpeed = _G.HackedWalkSpeed
+end)
+
+Main:AddSlider("JmPower", {Text = "JumpPower Modifier", Min = 1, Max = 500, Default = 50, Rounding = 1}):OnChanged(function(t)
+    game:GetService("Players").LocalPlayer.Character.Humanoid.JumpPower = t
+end)
+
     Main:AddToggle("TeamCheck", {Text = "Team Check", Default = SilentAimSettings.TeamCheck}):OnChanged(function()
         SilentAimSettings.TeamCheck = Toggles.TeamCheck.Value
-    end)
-    Main:AddToggle("VisibleCheck", {Text = "Visible Check", Default = SilentAimSettings.VisibleCheck}):OnChanged(function()
-        SilentAimSettings.VisibleCheck = Toggles.VisibleCheck.Value
     end)
     Main:AddDropdown("TargetPart", {AllowNull = true, Text = "Target Part", Default = SilentAimSettings.TargetPart, Values = {"Head", "HumanoidRootPart", "Random"}}):OnChanged(function()
         SilentAimSettings.TargetPart = Options.TargetPart.Value
