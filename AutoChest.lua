@@ -1,6 +1,6 @@
 function thisCode()
     repeat task.wait() until game:IsLoaded()
-	game:service'ReplicatedStorage'.Remotes.CommF_:InvokeServer("SetTeam","Pirates");
+	game:service'ReplicatedStorage'.Remotes.CommF_:InvokeServer("SetTeam","Marines");
     local PlaceID = game.PlaceId
     local AllIDs = {}
     local foundAnything = ""
