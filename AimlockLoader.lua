@@ -71,7 +71,7 @@ getgenv().GetNearestTarget = function()
     end
     
     local L_DISTANCE = math.floor(math.min(unpack(DISTANCES)))
-    if L_DISTANCE > getgenv().AimRadius then
+    if L_DISTANCE > getgenv().Fov then
         return nil
     end
     
@@ -95,7 +95,7 @@ Uis.InputBegan:Connect(function(Key)
                 end
             end)
         end
-        if Key.KeyCode == Enum.KeyCode[AimlockToggleKey] then 
+        if Key.KeyCode == Enum.KeyCode[EnableBind] then 
             Aimlock = not Aimlock
             Notify("Universe Hub", "Aimlock: "..tostring(Aimlock), "", 3)
         end
@@ -130,17 +130,17 @@ RService.RenderStepped:Connect(function()
         if AimlockTarget and AimlockTarget.Character and AimlockTarget.Character:FindFirstChild(getgenv().AimPart) then 
             if getgenv().FirstPerson == true then
                 if CanNotify == true then
-                    if getgenv().PredictMovement == true then 
-                        Camera.CFrame = CF(Camera.CFrame.p, AimlockTarget.Character[getgenv().AimPart].Position + AimlockTarget.Character[getgenv().AimPart].Velocity/PredictionVelocity)
-                    elseif getgenv().PredictMovement == false then 
+                    if getgenv().Predict == true then 
+                        Camera.CFrame = CF(Camera.CFrame.p, AimlockTarget.Character[getgenv().AimPart].Position + AimlockTarget.Character[getgenv().AimPart].Velocity/PredictionSpeed)
+                    elseif getgenv().Predict == false then 
                         Camera.CFrame = CF(Camera.CFrame.p, AimlockTarget.Character[getgenv().AimPart].Position)
                     end
                 end
             elseif getgenv().ThirdPerson == true then 
                 if CanNotify == true then
-                    if getgenv().PredictMovement == true then 
-                        Camera.CFrame = CF(Camera.CFrame.p, AimlockTarget.Character[getgenv().AimPart].Position + AimlockTarget.Character[getgenv().AimPart].Velocity/PredictionVelocity)
-                    elseif getgenv().PredictMovement == false then 
+                    if getgenv().Predict == true then 
+                        Camera.CFrame = CF(Camera.CFrame.p, AimlockTarget.Character[getgenv().AimPart].Position + AimlockTarget.Character[getgenv().AimPart].Velocity/PredictionSpeed)
+                    elseif getgenv().Predict == false then 
                         Camera.CFrame = CF(Camera.CFrame.p, AimlockTarget.Character[getgenv().AimPart].Position)
                     end
                 end 
