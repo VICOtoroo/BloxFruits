@@ -1,9 +1,3 @@
-getgenv().UniverseHubLoadingTime = tick()
-if UniverseHubLoadingTime == true then
-    Notify("Universe Hub", "Script Loaded Already", "", 3)
-    return 
-end
-
 local Players, Uis, RService, SGui = game:GetService"Players", game:GetService"UserInputService", game:GetService"RunService", game:GetService"StarterGui";
 local Client, Mouse, Camera, CF, RNew, Vec3, Vec2 = Players.LocalPlayer, Players.LocalPlayer:GetMouse(), workspace.CurrentCamera, CFrame.new, Ray.new, Vector3.new, Vector2.new;
 local Aimlock, MousePressed, CanNotify = true, false, false;
@@ -49,7 +43,6 @@ getgenv().GetObscuringObjects = function(T)
 end
 
 getgenv().GetNearestTarget = function()
-    -- Credits to whoever made this, i didnt make it, and my own mouse2plr function kinda sucks
     local players = {}
     local PLAYER_HOLD  = {}
     local DISTANCES = {}
@@ -59,33 +52,21 @@ getgenv().GetNearestTarget = function()
         end
     end
     for i, v in pairs(players) do
-        if v.Character ~= nil then
+        if v.Character then
             local AIM = v.Character:FindFirstChild("Head")
-            if getgenv().TeamCheck == true and v.Team ~= Client.Team then
-                local DISTANCE = (v.Character:FindFirstChild("Head").Position - game.Workspace.CurrentCamera.CFrame.p).magnitude
-                local RAY = Ray.new(game.Workspace.CurrentCamera.CFrame.p, (Mouse.Hit.p - game.Workspace.CurrentCamera.CFrame.p).unit * DISTANCE)
-                local HIT,POS = game.Workspace:FindPartOnRay(RAY, game.Workspace)
-                local DIFF = math.floor((POS - AIM.Position).magnitude)
-                PLAYER_HOLD[v.Name .. i] = {}
-                PLAYER_HOLD[v.Name .. i].dist= DISTANCE
-                PLAYER_HOLD[v.Name .. i].plr = v
-                PLAYER_HOLD[v.Name .. i].diff = DIFF
-                table.insert(DISTANCES, DIFF)
-            elseif getgenv().TeamCheck == false and v.Team == Client.Team then 
-                local DISTANCE = (v.Character:FindFirstChild("Head").Position - game.Workspace.CurrentCamera.CFrame.p).magnitude
-                local RAY = Ray.new(game.Workspace.CurrentCamera.CFrame.p, (Mouse.Hit.p - game.Workspace.CurrentCamera.CFrame.p).unit * DISTANCE)
-                local HIT,POS = game.Workspace:FindPartOnRay(RAY, game.Workspace)
-                local DIFF = math.floor((POS - AIM.Position).magnitude)
-                PLAYER_HOLD[v.Name .. i] = {}
-                PLAYER_HOLD[v.Name .. i].dist= DISTANCE
-                PLAYER_HOLD[v.Name .. i].plr = v
-                PLAYER_HOLD[v.Name .. i].diff = DIFF
-                table.insert(DISTANCES, DIFF)
-            end
+            local DISTANCE = (AIM.Position - game.Workspace.CurrentCamera.CFrame.p).magnitude
+            local RAY = Ray.new(game.Workspace.CurrentCamera.CFrame.p, (Mouse.Hit.p - game.Workspace.CurrentCamera.CFrame.p).unit * DISTANCE)
+            local HIT, POS = game.Workspace:FindPartOnRay(RAY, game.Workspace)
+            local DIFF = math.floor((POS - AIM.Position).magnitude)
+            PLAYER_HOLD[v.Name .. i] = {}
+            PLAYER_HOLD[v.Name .. i].dist = DISTANCE
+            PLAYER_HOLD[v.Name .. i].plr = v
+            PLAYER_HOLD[v.Name .. i].diff = DIFF
+            table.insert(DISTANCES, DIFF)
         end
     end
-    
-    if unpack(DISTANCES) == nil then
+
+    if #DISTANCES == 0 then
         return nil
     end
     
@@ -101,49 +82,6 @@ getgenv().GetNearestTarget = function()
     end
     return nil
 end
-
---[[getgenv().CheckTeamsChildren = function()
-    if workspace and workspace:FindFirstChild"Teams" then 
-        if getgenv().TeamCheck == true then
-            if #workspace.Teams:GetChildren() == 0 then 
-                getgenv().TeamCheck = false 
-                SeparateNotify("Universe Hub", "TeamCheck set to: "..tostring(getgenv().TeamCheck).." because there are no teams!", "", 3)
-            end
-        end
-    end
-end
-CheckTeamsChildren()
-]]--
-
---[[getgenv().GetNearestTarget = function()
-    local T;
-    for _, p in next, Players:GetPlayers() do 
-        if p ~= Client then 
-            if p.Character and p.Character:FindFirstChild(getgenv().AimPart) then 
-                if getgenv().TeamCheck == true and p.Team ~= Client.Team then 
-                    local Pos, ScreenCheck = WorldToScreenPoint(p.Character[getgenv().AimPart].Position)
-                    Pos = Vec2(Pos.X, Pos.Y)
-                    local MPos = Vec2(Mouse.X, Mouse.Y) -- Credits to CriShoux for this
-                    local Distance = (Pos - MPos).Magnitude;
-                    if Distance < getgenv().AimRadius then 
-                        T = p 
-                    end
-                elseif getgenv().TeamCheck == false and p.Team == Client.Team then 
-                    local Pos, ScreenCheck = WorldToScreenPoint(p.Character[getgenv().AimPart].Position)
-                    Pos = Vec2(Pos.X, Pos.Y)
-                    local MPos = Vec2(Mouse.X, Mouse.Y) -- Credits to CriShoux for this
-                    local Distance = (Pos - MPos).Magnitude;
-                    if Distance < getgenv().AimRadius then 
-                        T = p 
-                    end
-                end
-            end
-        end
-    end
-    if T then 
-        return T
-    end
-end]]--
 
 Uis.InputBegan:Connect(function(Key)
     if not (Uis:GetFocusedTextBox()) then 
@@ -210,5 +148,3 @@ RService.RenderStepped:Connect(function()
         end
     end
 end)
-
-SeparateNotify("Ciazware", "Universal Aimbot loaded in: "..string.format("%.7f", tostring(tick() - UniverseHubLoadingTime)), "", 3)
