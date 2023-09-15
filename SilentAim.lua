@@ -220,7 +220,6 @@ end
 
 -- ui creating & handling
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/PeasIn/LinoriaLib/main/Library.lua"))()
-Library:SetWatermark("Eita Porra")
 
 local Window = Library:CreateWindow("Silent Cuzin")
 local GeneralTab = Window:AddTab("General")
@@ -237,7 +236,7 @@ Main:AddToggle("aim_Enabled", {Text = "Silent Aim"}):AddKeyPicker("aim_Enabled_K
         mouse_box.Visible = SilentAimSettings.Enabled
     end)
 
-    Main:AddToggle("MousePosition", {Text = "Show Silent Aim Target"}):AddColorPicker("MouseVisualizeColor", {Default = Color3.fromRGB(54, 57, 241)}):OnChanged(function()
+    Main:AddToggle("MousePosition", {Text = "Show Silent Aim Target"}):AddColorPicker("MouseVisualizeColor", {Default = Color3.fromRGB(255, 255, 255)}):OnChanged(function()
         mouse_box.Visible = Toggles.MousePosition.Value 
         SilentAimSettings.ShowSilentAimTarget = Toggles.MousePosition.Value 
     end)
